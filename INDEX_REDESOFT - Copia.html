@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Portal de Novidades Redesoft</title>
+
+  <!-- Fonte similar ao logo -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    html, body { height: 100%; margin: 0; padding: 0; }
+    #index-page, #post-page { min-height: 100vh; }
+    #post-page { overflow-y: auto; background-color: #f3f4f6; }
+
+    .titulo-redesoft {
+      font-family: 'Poppins', sans-serif;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+
+    /* Banner 25% da altura da tela */
+    .banner-ads {
+      height: 25vh;
+      min-height: 180px;
+      max-height: 360px;
+    }
+  </style>
+</head>
+
+<body class="bg-gray-100">
+  <div id="app">
+
+    <!-- PÁGINA INICIAL -->
+    <div id="index-page">
+      <!-- BANNER ANÚNCIOS (FULL WIDTH - 25% altura) -->
+      <section class="w-full banner-ads bg-gray-900 relative overflow-hidden">
+        <div id="ads-carousel" class="w-full h-full overflow-hidden">
+          <!-- Track gerado via JS -->
+        </div>
+
+        <!-- overlay leve -->
+        <div class="absolute inset-0 bg-black/20 pointer-events-none"></div>
+
+        <!-- Controles -->
+        <button onclick="prevAd()" aria-label="Anterior"
+          class="absolute left-3 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-gray-800 shadow rounded-full p-2 z-10">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none"
+            viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+          </svg>
+        </button>
+
+        <button onclick="nextAd()" aria-label="Próximo"
+          class="absolute right-3 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-gray-800 shadow rounded-full p-2 z-10">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none"
+            viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+          </svg>
+        </button>
+
+        <!-- Indicadores -->
+        <div id="ads-dots" class="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-2 z-10"></div>
+      </section>
+
+      <!-- CONTEÚDO -->
+      <main class="max-w-7xl mx-auto px-4 py-8">
+        <header class="mb-6">
+          <h1 class="titulo-redesoft text-3xl md:text-4xl text-center text-green-600">
+            Bem-vindo ao b2click
+          </h1>
+          <p class="text-center text-gray-600 mt-2">
+            Pesquise e navegue pelos posts abaixo.
+          </p>
+        </header>
+
+        <!-- PESQUISA -->
+        <section class="mb-6">
+          <div class="bg-white rounded-2xl shadow border p-4 md:p-5">
+            <label for="search" class="block text-sm font-semibold text-gray-700 mb-2">
+              Pesquisar post
+            </label>
+
+            <div class="flex flex-col md:flex-row gap-3 md:items-center">
+              <div class="relative flex-1">
+                <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 103.5 10.5a7.5 7.5 0 0013.15 6.15z" />
+                  </svg>
+                </span>
+                <input id="search" type="text" placeholder="Ex.: WhatsApp, segurança, relatório..."
+                  class="w-full pl-10 pr-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-green-500"/>
+              </div>
+
+              <button id="clearSearch"
+                class="px-4 py-3 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold">
+                Limpar
+              </button>
+            </div>
+
+            <p id="searchHint" class="text-sm text-gray-500 mt-3">
+              Dica: a pesquisa busca no título, resumo e conteúdo.
+            </p>
+          </div>
+        </section>
+
+        <!-- GRID DOS POSTS -->
+        <section>
+          <div class="flex items-center justify-between mb-3">
+            <h2 class="text-lg md:text-xl font-bold text-gray-800">Posts</h2>
+            <span id="resultsCount" class="text-sm text-gray-600"></span>
+          </div>
+
+          <div id="posts-grid"
+            class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Cards gerados via JS -->
+          </div>
+
+          <div id="noResults" class="hidden mt-10 text-center">
+            <p class="text-gray-600">Nenhum post encontrado para a sua pesquisa.</p>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <!-- PÁGINA DO POST -->
+    <div id="post-page" class="min-h-screen hidden">
+      <main class="max-w-4xl mx-auto px-4 py-8">
+        <button onclick="showPage('index')"
+          class="mb-6 inline-flex items-center gap-2 text-green-600 font-semibold hover:underline">
+          ← Voltar
+        </button>
+
+        <article id="post" class="bg-white rounded-2xl shadow border overflow-hidden">
+          <img id="post-imagem" class="w-full max-h-96 object-cover" alt="Imagem do post"/>
+
+          <div class="p-6 md:p-8">
+            <h1 id="post-titulo" class="text-2xl md:text-3xl font-bold mb-2"></h1>
+            <p id="post-data" class="text-gray-500 mb-6"></p>
+            <div id="post-conteudo" class="prose max-w-none text-gray-700 whitespace-pre-line"></div>
+          </div>
+        </article>
+
+        <p id="erro" class="text-center text-red-500 hidden mt-8">
+          Post não encontrado.
+        </p>
+      </main>
+    </div>
+  </div>
+
+  <script>
+    // =========================
+    // DADOS DOS POSTS (mantidos)
+    // =========================
+    const posts = [
+      {
+        "id": 1,
+        "titulo": "B2click integrado ao WhatsApp",
+        "resumo": "O b2click agora conta com integração direta ao WhatsApp, permitindo que o sistema se comunique com o usuário de forma rápida, segura e prática. Essa integração possibilita o envio de notificações, relatórios, solicitações de aprovação e mensagens operacionais diretamente para o celular. ",
+        "imagem": "./img/Card1_redesoft.png",
+        "data": "26/01/2026",
+        "conteudo": "O b2click agora conta com integração direta ao WhatsApp, permitindo que o sistema se comunique com o usuário de forma rápida, segura e prática. Essa integração possibilita o envio de notificações, relatórios, solicitações de aprovação e mensagens operacionais diretamente para o celular. \n\n No primeiro acesso, o usuário informa o número de WhatsApp e recebe um token para validação. Após a confirmação, o canal passa a ser utilizado como meio oficial de comunicação entre o sistema e o usuário, ampliando a agilidade no recebimento de informações importantes. \n\n Inicialmente, a vinculação pode ser pulada, mas futuramente será obrigatória para acesso ao sistema. Essa medida faz parte da estratégia de reforço da segurança e da modernização da experiência de uso."
+      },
+      {
+        "id": 2,
+        "titulo": "Mais segurança no acesso ao sistema",
+        "resumo": "A segurança do b2click foi reforçada com a adoção de autenticação em dois fatores. Além da senha, o acesso ao sistema passa a contar com validações adicionais, reduzindo significativamente os riscos de acessos indevidos. ",
+        "imagem": "./img/card2_redesoft.png",
+        "data": "26/01/2026",
+        "conteudo": "A segurança do b2click foi reforçada com a adoção de autenticação em dois fatores. Além da senha, o acesso ao sistema passa a contar com validações adicionais, reduzindo significativamente os riscos de acessos indevidos. \n\n O processo pode envolver o recebimento de códigos via WhatsApp, o uso de aplicativos autenticadores como Google Authenticator ou Microsoft Authenticator, além da leitura de QR Code para confirmação da identidade do usuário. \n\n Essas camadas adicionais garantem mais proteção para dados sensíveis, operações financeiras e informações estratégicas, alinhando o b2click às melhores práticas de segurança digital. "
+      },
+      {
+        "id": 3,
+        "titulo": "Jornada de trabalho inteligente",
+        "resumo": "O envio de mensagens pelo WhatsApp passa a respeitar a jornada de trabalho do usuário. O b2click só realiza comunicações quando a jornada está ativa, evitando notificações fora do horário configurado. ",
+        "imagem": "./img/card3_redesoft.png",
+        "data": "26/01/2026",
+        "conteudo": "O envio de mensagens pelo WhatsApp passa a respeitar a jornada de trabalho do usuário. O b2click só realiza comunicações quando a jornada está ativa, evitando notificações fora do horário configurado.\n\n Em dias e horários definidos, o sistema envia uma mensagem perguntando se o usuário está disponível. A confirmação é obrigatória para que as notificações daquele dia sejam liberadas. Caso não haja resposta, o sistema entende que o usuário não está em jornada ativa.\n\n Essa funcionalidade garante mais controle, organização e respeito ao tempo do usuário, além de evitar excessos de mensagens fora do contexto de trabalho."
+      },
+      {
+        "id": 4,
+        "titulo": "Decisões rápidas e notificações inteligentes",
+        "resumo": "Com a integração ativa e a jornada confirmada, o usuário pode receber notificações importantes diretamente pelo WhatsApp. Isso inclui alertas operacionais, avisos de exceção e informações críticas para a tomada de decisão. ",
+        "imagem": "./img/card4_redesoft.png",
+        "data": "26/01/2026",
+        "conteudo": "Com a integração ativa e a jornada confirmada, o usuário pode receber notificações importantes diretamente pelo WhatsApp. Isso inclui alertas operacionais, avisos de exceção e informações críticas para a tomada de decisão. \n\n Também é possível aprovar ou reprovar permissões sem acessar o sistema, tornando o processo mais ágil e reduzindo atrasos operacionais. As respostas são registradas automaticamente no b2click. \n\n Caso a jornada não esteja ativa, nenhuma notificação será enviada, garantindo que a comunicação ocorra apenas no momento adequado. "
+      },
+      {
+        "id": 5,
+        "titulo": "Informativos e comunicados oficiais",
+        "resumo": "O b2click permite que o usuário escolha receber comunicações institucionais enviadas pela Redesoft. Esses conteúdos abordam temas como segurança, fiscal, contábil e frente de loja. ",
+        "imagem": "./img/card5_redesoft.png",
+        "data": "26/01/2026",
+        "conteudo": "O b2click permite que o usuário escolha receber comunicações institucionais enviadas pela Redesoft. Esses conteúdos abordam temas como segurança, fiscal, contábil e frente de loja. \n\n As mensagens são informativas e não específicas da empresa do cliente. Elas têm como objetivo manter todos atualizados sobre boas práticas, mudanças relevantes e orientações gerais. \n\n Essa comunicação fortalece o relacionamento com os clientes e contribui para um uso mais consciente e atualizado do sistema."
+      },
+      {
+        "id": 6,
+        "titulo": "Relatórios mais modernos e integrados",
+        "resumo": "Os relatórios do b2click agora são exibidos diretamente dentro do sistema, proporcionando uma experiência mais fluida e moderna. O usuário pode navegar entre páginas, aplicar zoom, redimensionar a visualização e imprimir conforme necessário. ",
+        "imagem": "./img/card6_redesoft.png",
+        "data": "26/01/2026",
+        "conteudo": "Os relatórios do b2click agora são exibidos diretamente dentro do sistema, proporcionando uma experiência mais fluida e moderna. O usuário pode navegar entre páginas, aplicar zoom, redimensionar a visualização e imprimir conforme necessário. \n\n Além disso, os relatórios podem ser exportados em PDF, mantendo a padronização e facilitando o compartilhamento das informações com outros setores ou responsáveis. \n\n Essa mudança elimina a dependência de visualizadores externos e torna o acesso às informações mais rápido e prático."
+      },
+      {
+        "id": 7,
+        "titulo": "Agilidade com filtros e favoritos",
+        "resumo": "O b2click permite a criação de filtros personalizados para relatórios, como períodos, operadores, turnos e outras variáveis. Esses filtros podem ser salvos com um nome e reutilizados sempre que necessário. ",
+        "imagem": "./img/card7_redesoft.png",
+        "data": "26/01/2026",
+        "conteudo": "O b2click permite a criação de filtros personalizados para relatórios, como períodos, operadores, turnos e outras variáveis. Esses filtros podem ser salvos com um nome e reutilizados sempre que necessário. \n\n Além disso, relatórios e telas mais utilizadas podem ser adicionados ao menu Favoritos, ficando disponíveis para acesso rápido, já com os filtros aplicados. \n\n O resultado é menos navegação, menos cliques e uma rotina muito mais produtiva."
+      },
+      {
+        "id": 8,
+        "titulo": "Notificações mais estáveis e eficientes",
+        "resumo": "O sistema de notificações do b2click foi aprimorado para ser mais resistente a falhas de internet e instabilidades de conexão. Isso garante maior confiabilidade no envio e recebimento de mensagens. ",
+        "imagem": "./img/card8_redesoft.png",
+        "data": "26/01/2026",
+        "conteudo": "O sistema de notificações do b2click foi aprimorado para ser mais resistente a falhas de internet e instabilidades de conexão. Isso garante maior confiabilidade no envio e recebimento de mensagens. \n\n Agora é possível realizar múltiplas aprovações simultâneas, sem impactar as operações em andamento no sistema. As notificações funcionam de forma assíncrona e segura. \n\n Essa melhoria aumenta a estabilidade geral da plataforma e a confiança no uso das funcionalidades de comunicação."
+      },
+      {
+        "id": 9,
+        "titulo": "Automação para ganhar tempo",
+        "resumo": "O Ajudador de Tarefas é uma ferramenta de automação disponível para clientes Gas Corp +. Ele permite automatizar processos repetitivos, reduzindo a necessidade de ações manuais no sistema. ",
+        "imagem": "./img/card9_redesoft.png",
+        "data": "26/01/2026",
+        "conteudo": "O Ajudador de Tarefas é uma ferramenta de automação disponível para clientes Gas Corp +. Ele permite automatizar processos repetitivos, reduzindo a necessidade de ações manuais no sistema. \n\n As tarefas podem ser executadas por gatilhos temporais, em datas e horários programados, ou por gatilhos instantâneos, acionados por eventos específicos. É possível, por exemplo, automatizar o envio de relatórios, cobranças e rotinas recorrentes. \n\n  As automações podem ser visualizadas em calendário, pausadas, executadas manualmente ou ajustadas a qualquer momento, oferecendo total controle ao usuário."
+      },
+      {
+        "id": 10,
+        "titulo": "O caminho que estamos construindo",
+        "resumo": "O b2click está evoluindo para se tornar uma plataforma altamente automatizada, com forte uso de Inteligência Artificial e o WhatsApp como principal interface de interação.",
+        "imagem": "./img/card10_redesoft.png",
+        "data": "26/01/2026",
+        "conteudo": "O b2click está evoluindo para se tornar uma plataforma altamente automatizada, com forte uso de Inteligência Artificial e o WhatsApp como principal interface de interação. \n\n A visão é permitir que tarefas, consultas e comandos sejam executados apenas por mensagens, utilizando prompts de forma simples e intuitiva. Isso reduzirá ainda mais a complexidade operacional. \n\n Essa atualização estabelece as bases dessa transformação, reforçando o compromisso da Redesoft com inovação, eficiência e tecnologia de ponta."
+      }
+    ];
+
+    // =========================
+    // PÁGINAS / NAVEGAÇÃO
+    // =========================
+    function showPage(pageName, postId = null) {
+      const indexPage = document.getElementById('index-page');
+      const postPage = document.getElementById('post-page');
+
+      if (pageName === 'index') {
+        indexPage.classList.remove('hidden');
+        postPage.classList.add('hidden');
+        document.title = "Portal de Novidades Redesoft";
+        history.pushState({ page: 'index' }, '', window.location.pathname);
+
+        // garante grid atualizado ao voltar
+        applySearchAndRender();
+        window.scrollTo(0, 0);
+      } else if (pageName === 'post') {
+        indexPage.classList.add('hidden');
+        postPage.classList.remove('hidden');
+        history.pushState({ page: 'post', postId: postId }, '', `?id=${postId}`);
+        if (postId) loadPost(postId);
+      }
+    }
+
+    function loadPost(postId) {
+      const post = posts.find(p => p.id === Number(postId));
+
+      if (post) {
+        document.getElementById("post-imagem").src = post.imagem;
+        document.getElementById("post-imagem").alt = post.titulo;
+        document.getElementById("post-titulo").textContent = post.titulo;
+        document.getElementById("post-data").textContent = post.data;
+        document.getElementById("post-conteudo").textContent = post.conteudo;
+        document.getElementById("post").classList.remove("hidden");
+        document.getElementById("erro").classList.add("hidden");
+        document.title = post.titulo + " - Redesoft";
+        window.scrollTo(0, 0);
+      } else {
+        document.getElementById("post").classList.add("hidden");
+        document.getElementById("erro").classList.remove("hidden");
+      }
+    }
+
+    // =========================
+    // GRID + PESQUISA
+    // =========================
+    function escapeHtml(str) {
+      return String(str)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function matchesSearch(post, q) {
+      if (!q) return true;
+      const needle = q.toLowerCase().trim();
+      const hay = (post.titulo + " " + post.resumo + " " + post.conteudo).toLowerCase();
+      return hay.includes(needle);
+    }
+
+    function renderPosts(list) {
+      const grid = document.getElementById("posts-grid");
+      const noResults = document.getElementById("noResults");
+      const resultsCount = document.getElementById("resultsCount");
+
+      grid.innerHTML = "";
+
+      resultsCount.textContent = `${list.length} resultado(s)`;
+
+      if (list.length === 0) {
+        noResults.classList.remove("hidden");
+        return;
+      }
+
+      noResults.classList.add("hidden");
+
+      list.forEach((post) => {
+        const card = document.createElement("article");
+        card.className =
+          "bg-white rounded-2xl shadow border overflow-hidden hover:shadow-md transition cursor-pointer flex flex-col";
+
+        card.onclick = () => showPage("post", post.id);
+
+        card.innerHTML = `
+          <div class="relative">
+            <img src="${escapeHtml(post.imagem)}" alt="${escapeHtml(post.titulo)}"
+              class="w-full h-44 object-cover"/>
+            <span class="absolute top-3 left-3 bg-white/90 text-gray-800 text-xs font-semibold px-3 py-1 rounded-full shadow">
+              ${escapeHtml(post.data)}
+            </span>
+          </div>
+          <div class="p-5 flex-1 flex flex-col">
+            <h3 class="text-lg font-bold text-gray-900 mb-2 line-clamp-2">${escapeHtml(post.titulo)}</h3>
+            <p class="text-gray-600 text-sm mb-4 line-clamp-3">${escapeHtml(post.resumo)}</p>
+            <div class="mt-auto">
+              <button class="inline-flex items-center text-green-600 font-semibold hover:underline">
+                Ler mais →
+              </button>
+            </div>
+          </div>
+        `;
+
+        grid.appendChild(card);
+      });
+    }
+
+    function applySearchAndRender() {
+      const q = document.getElementById("search").value || "";
+      const filtered = posts.filter(p => matchesSearch(p, q));
+      renderPosts(filtered);
+    }
+
+    // =========================
+    // BANNER DE ANÚNCIOS (carrossel)
+    // =========================
+    const adImages = [
+      "https://picsum.photos/seed/redesoft-ad-1/1920/600",
+      "https://picsum.photos/seed/redesoft-ad-2/1920/600",
+      "https://picsum.photos/seed/redesoft-ad-3/1920/600",
+      "https://picsum.photos/seed/redesoft-ad-4/1920/600",
+      "https://picsum.photos/seed/redesoft-ad-5/1920/600"
+    ];
+
+    let currentAd = 0;
+    let adsCount = 0;
+    let adsTrack = null;
+
+    function initAdsBanner() {
+      const container = document.getElementById("ads-carousel");
+      container.innerHTML = "";
+
+      adsTrack = document.createElement("div");
+      adsTrack.className = "flex h-full w-full transition-transform duration-500 ease-in-out";
+      adsTrack.style.transform = "translateX(0%)";
+
+      adImages.forEach((src, idx) => {
+        const slide = document.createElement("div");
+        slide.className = "w-full h-full flex-shrink-0 relative";
+        slide.innerHTML = `
+          <img src="${src}" alt="Anúncio ${idx + 1}" class="w-full h-full object-cover"/>
+          <div class="absolute inset-0 flex items-end">
+            <div class="w-full p-4 md:p-6 bg-gradient-to-t from-black/60 to-transparent">
+              <p class="text-white font-semibold text-sm md:text-base">
+                Espaço para anúncios • Imagens aleatórias (exemplo)
+              </p>
+            </div>
+          </div>
+        `;
+        adsTrack.appendChild(slide);
+      });
+
+      container.appendChild(adsTrack);
+      adsCount = adImages.length;
+
+      renderAdDots();
+      showAd(currentAd);
+    }
+
+    function renderAdDots() {
+      const dots = document.getElementById("ads-dots");
+      dots.innerHTML = "";
+
+      for (let i = 0; i < adsCount; i++) {
+        const b = document.createElement("button");
+        b.className = "w-2.5 h-2.5 rounded-full bg-white/60 hover:bg-white transition";
+        b.setAttribute("aria-label", `Ir para anúncio ${i + 1}`);
+        b.onclick = () => { currentAd = i; showAd(currentAd); };
+        b.dataset.index = i;
+        dots.appendChild(b);
+      }
+      updateAdDots();
+    }
+
+    function updateAdDots() {
+      const dots = document.querySelectorAll("#ads-dots button");
+      dots.forEach((d, i) => {
+        if (i === currentAd) d.className = "w-2.5 h-2.5 rounded-full bg-white transition";
+        else d.className = "w-2.5 h-2.5 rounded-full bg-white/60 hover:bg-white transition";
+      });
+    }
+
+    function showAd(index) {
+      if (!adsTrack || adsCount === 0) return;
+      adsTrack.style.transform = `translateX(-${index * 100}%)`;
+      updateAdDots();
+    }
+
+    function nextAd() {
+      if (adsCount === 0) return;
+      currentAd = (currentAd + 1) % adsCount;
+      showAd(currentAd);
+    }
+
+    function prevAd() {
+      if (adsCount === 0) return;
+      currentAd = (currentAd - 1 + adsCount) % adsCount;
+      showAd(currentAd);
+    }
+
+    // =========================
+    // INIT
+    // =========================
+    document.addEventListener("DOMContentLoaded", () => {
+      // Banner anúncios
+      initAdsBanner();
+      setInterval(() => {
+        const indexHidden = document.getElementById("index-page").classList.contains("hidden");
+        if (!indexHidden) nextAd();
+      }, 4500);
+
+      // Pesquisa
+      const search = document.getElementById("search");
+      const clearSearch = document.getElementById("clearSearch");
+
+      search.addEventListener("input", applySearchAndRender);
+      clearSearch.addEventListener("click", () => {
+        search.value = "";
+        applySearchAndRender();
+        search.focus();
+      });
+
+      // rota inicial
+      const params = new URLSearchParams(window.location.search);
+      const postId = params.get("id");
+
+      if (postId) showPage("post", postId);
+      else {
+        showPage("index");
+        applySearchAndRender();
+      }
+    });
+
+    window.onpopstate = function() {
+      const params = new URLSearchParams(window.location.search);
+      const postId = params.get("id");
+      if (postId) showPage("post", postId);
+      else showPage("index");
+    };
+  </script>
+</body>
+</html>
